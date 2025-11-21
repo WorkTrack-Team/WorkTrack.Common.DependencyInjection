@@ -1,0 +1,37 @@
+# WorkTrack.Common.DependencyInjection Configuration
+# Настройки для анализаторов WorkTrack.Common.Analyzers
+
+root = true
+
+[*.cs]
+# ==========================================
+# Настройки WorkTrack.Common.Analyzers
+# ==========================================
+
+# Настройка максимального количества строк в методе (WTI0001)
+wt_common_method_length_max_lines = 5
+
+# Исключение для методов с try-catch
+[src/WorkTrack.Common.DependencyInjection/ActivatorCreationStrategy.cs]
+wt_common_method_length_max_lines = 10
+
+[src/WorkTrack.Common.DependencyInjection/InstallerRegistry.cs]
+wt_common_method_length_max_lines = 10
+
+[src/WorkTrack.Common.DependencyInjection/ConfigurableInstallerTypeFilter.cs]
+wt_common_method_length_max_lines = 10
+
+[src/WorkTrack.Common.DependencyInjection/ServiceCollectionExtensions.cs]
+wt_common_method_length_max_lines = 10
+
+# Настройка целевых префиксов проектов для анализаторов
+wt_common_analyzer_target_prefixes = WorkTrack.
+
+# Уровни серьезности для анализаторов WorkTrack
+dotnet_diagnostic.WTI0001.severity = error
+dotnet_diagnostic.WTI0002.severity = error
+dotnet_diagnostic.WTI0004.severity = error
+dotnet_diagnostic.WTI0005.severity = error
+dotnet_diagnostic.WTI0006.severity = error
+dotnet_diagnostic.WTI0007.severity = error
+

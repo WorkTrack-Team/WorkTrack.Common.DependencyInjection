@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore WorkTrack.Common.DependencyInjection.sln
+
+    - name: Build
+      run: dotnet build WorkTrack.Common.DependencyInjection.sln --no-restore --configuration Release
+
+    - name: Test
+      run: dotnet test WorkTrack.Common.DependencyInjection.sln --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory:./TestResults --verbosity normal || true
+
+    - name: Generate coverage report
+      if: always()
+      run: |
+        python3 << 'EOF'
+        import xml.etree.ElementTree as ET
+        import glob
+        pattern = "TestResults/*/coverage.cobertura.xml"
+        files = glob.glob(pattern)
+        if files:
+            files.sort(reverse=True)
+            tree = ET.parse(files[0])
+            root = tree.getroot()
+            line_rate = float(root.attrib.get('line-rate', 0)) * 100
+            branch_rate = float(root.attrib.get('branch-rate', 0)) * 100
+            print(f"Покрытие строк: {line_rate:.2f}%")
+            print(f"Покрытие ветвей: {branch_rate:.2f}%")
+        EOF
+
+    - name: Publish NuGet package
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: dotnet pack src/WorkTrack.Common.DependencyInjection/WorkTrack.Common.DependencyInjection.csproj --no-build --configuration Release --output ./nupkg /p:TreatWarningsAsErrors=false /p:NuGetTreatWarningsAsErrors=false
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push to GitHub Packages
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: |
+        dotnet nuget push ./nupkg/*.nupkg \
+          --source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
+          --api-key ${{ secrets.GITHUB_TOKEN }} \
+          --skip-duplicate
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

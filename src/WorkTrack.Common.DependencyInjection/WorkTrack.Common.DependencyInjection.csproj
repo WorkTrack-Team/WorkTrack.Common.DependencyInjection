@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageId>WorkTrack.Common.DependencyInjection</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>WorkTrack Team</Authors>
+        <Description>Общие абстракции для модульной регистрации сервисов через IServiceInstaller</Description>
+        <PackageTags>WorkTrack;DependencyInjection;DI;ServiceInstaller</PackageTags>
+        <RepositoryUrl>https://github.com/WorkTrack-Team/WorkTrack</RepositoryUrl>
+        <NoDefaultExcludes>true</NoDefaultExcludes>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+      <PackageReference Include="Ardalis.GuardClauses" />
+      <PackageReference Include="WorkTrack.Common.Analyzers" PrivateAssets="all" />
+    </ItemGroup>
+
+</Project>
+
