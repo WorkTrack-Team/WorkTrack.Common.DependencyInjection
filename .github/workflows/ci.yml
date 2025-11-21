@@ -79,15 +79,7 @@ jobs:
           EOF
 
       - name: Restore dependencies
-        run: |
-          echo "Пытаемся восстановить зависимости..."
-          dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity detailed 2>&1 | tail -100 || {
-            echo "Restore failed, проверяем источники:"
-            dotnet nuget list source
-            echo "Пытаемся найти пакет напрямую:"
-            dotnet nuget search WorkTrack.Common.Analyzers --source github 2>&1 || echo "Поиск не удался"
-            exit 1
-          }
+        run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity normal
 
       - name: Build
         run: dotnet build WorkTrack.Common.DependencyInjection.sln --no-restore --configuration Release
@@ -205,15 +197,7 @@ jobs:
           EOF
 
       - name: Restore dependencies
-        run: |
-          echo "Пытаемся восстановить зависимости..."
-          dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity detailed 2>&1 | tail -100 || {
-            echo "Restore failed, проверяем источники:"
-            dotnet nuget list source
-            echo "Пытаемся найти пакет напрямую:"
-            dotnet nuget search WorkTrack.Common.Analyzers --source github 2>&1 || echo "Поиск не удался"
-            exit 1
-          }
+        run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity normal
 
       - name: Run analyzers
         run: dotnet build WorkTrack.Common.DependencyInjection.sln --no-restore --configuration Release -warnaserror
