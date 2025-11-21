@@ -34,7 +34,7 @@ jobs:
           
           # Настраиваем GitHub Packages
           # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          if [ -n "$NUGET_PAT" ] && [ "$NUGET_PAT" != "" ]; then
+          if [ -n "$NUGET_PAT" ]; then
             echo "Используем NUGET_PAT для доступа к пакетам"
             NUGET_TOKEN="$NUGET_PAT"
           else
