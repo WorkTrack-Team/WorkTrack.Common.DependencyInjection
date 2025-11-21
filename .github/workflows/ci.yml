@@ -26,16 +26,22 @@ jobs:
       - name: Setup NuGet sources
         run: |
           # Настраиваем аутентификацию для GitHub Packages
-          # Используем NUGET_PAT для доступа к пакетам организации
-          # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
+          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
+          NUGET_TOKEN="${{ secrets.NUGET_PAT }}"
+          if [ -z "$NUGET_TOKEN" ] || [ "$NUGET_TOKEN" = "" ]; then
+            echo "NUGET_PAT не установлен, используем GITHUB_TOKEN"
+            NUGET_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          fi
+          
+          echo "Настраиваем GitHub Packages"
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "${{ secrets.NUGET_PAT }}" \
-            --store-password-in-clear-text || \
+            --password "$NUGET_TOKEN" \
+            --store-password-in-clear-text 2>/dev/null || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "${{ secrets.NUGET_PAT }}" \
+            --password "$NUGET_TOKEN" \
             --store-password-in-clear-text
           
           # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
@@ -62,7 +68,7 @@ jobs:
           EOF
 
       - name: Restore dependencies
-        run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity detailed
+        run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity normal
 
       - name: Build
         run: dotnet build WorkTrack.Common.DependencyInjection.sln --no-restore --configuration Release
@@ -127,16 +133,22 @@ jobs:
       - name: Setup NuGet sources
         run: |
           # Настраиваем аутентификацию для GitHub Packages
-          # Используем NUGET_PAT для доступа к пакетам организации
-          # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
+          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
+          NUGET_TOKEN="${{ secrets.NUGET_PAT }}"
+          if [ -z "$NUGET_TOKEN" ] || [ "$NUGET_TOKEN" = "" ]; then
+            echo "NUGET_PAT не установлен, используем GITHUB_TOKEN"
+            NUGET_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          fi
+          
+          echo "Настраиваем GitHub Packages"
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "${{ secrets.NUGET_PAT }}" \
-            --store-password-in-clear-text || \
+            --password "$NUGET_TOKEN" \
+            --store-password-in-clear-text 2>/dev/null || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "${{ secrets.NUGET_PAT }}" \
+            --password "$NUGET_TOKEN" \
             --store-password-in-clear-text
           
           # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
@@ -163,7 +175,7 @@ jobs:
           EOF
 
       - name: Restore dependencies
-        run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity detailed
+        run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity normal
 
       - name: Run analyzers
         run: dotnet build WorkTrack.Common.DependencyInjection.sln --no-restore --configuration Release -warnaserror
