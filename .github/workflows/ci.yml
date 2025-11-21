@@ -181,3 +181,4 @@ jobs:
 
       - name: Run analyzers
         run: dotnet build WorkTrack.Common.DependencyInjection.sln --no-restore --configuration Release -warnaserror
+# Trigger CI
