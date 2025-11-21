@@ -24,13 +24,24 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Setup NuGet sources
+        env:
+          NUGET_PAT: ${{ secrets.NUGET_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Настраиваем аутентификацию для GitHub Packages
+          set +e
+          
+          # Добавляем nuget.org как источник для публичных пакетов
+          dotnet nuget add source https://api.nuget.org/v3/index.json \
+            --name nuget.org || true
+          
+          # Настраиваем GitHub Packages
           # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          NUGET_TOKEN="${{ secrets.NUGET_PAT }}"
-          if [ -z "$NUGET_TOKEN" ] || [ "$NUGET_TOKEN" = "" ]; then
+          if [ -n "${NUGET_PAT:-}" ]; then
+            echo "Используем NUGET_PAT для доступа к пакетам"
+            NUGET_TOKEN="$NUGET_PAT"
+          else
             echo "NUGET_PAT не установлен, используем GITHUB_TOKEN"
-            NUGET_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+            NUGET_TOKEN="$GITHUB_TOKEN"
           fi
           
           echo "Настраиваем GitHub Packages"
@@ -44,15 +55,11 @@ jobs:
             --password "$NUGET_TOKEN" \
             --store-password-in-clear-text
           
-          # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
-          dotnet nuget add source https://api.nuget.org/v3/index.json \
-            --name nuget.org || true
-          
           # Проверяем что источник добавлен
           echo "Список источников NuGet:"
           dotnet nuget list source || true
           
-          # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
+          # Создаем nuget.config с package source mapping
           cat > nuget.config << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
@@ -66,6 +73,8 @@ jobs:
             </packageSourceMapping>
           </configuration>
           EOF
+          
+          set -e
 
       - name: Restore dependencies
         run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity normal
@@ -131,13 +140,24 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Setup NuGet sources
+        env:
+          NUGET_PAT: ${{ secrets.NUGET_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Настраиваем аутентификацию для GitHub Packages
+          set +e
+          
+          # Добавляем nuget.org как источник для публичных пакетов
+          dotnet nuget add source https://api.nuget.org/v3/index.json \
+            --name nuget.org || true
+          
+          # Настраиваем GitHub Packages
           # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          NUGET_TOKEN="${{ secrets.NUGET_PAT }}"
-          if [ -z "$NUGET_TOKEN" ] || [ "$NUGET_TOKEN" = "" ]; then
+          if [ -n "${NUGET_PAT:-}" ]; then
+            echo "Используем NUGET_PAT для доступа к пакетам"
+            NUGET_TOKEN="$NUGET_PAT"
+          else
             echo "NUGET_PAT не установлен, используем GITHUB_TOKEN"
-            NUGET_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+            NUGET_TOKEN="$GITHUB_TOKEN"
           fi
           
           echo "Настраиваем GitHub Packages"
@@ -151,15 +171,11 @@ jobs:
             --password "$NUGET_TOKEN" \
             --store-password-in-clear-text
           
-          # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
-          dotnet nuget add source https://api.nuget.org/v3/index.json \
-            --name nuget.org || true
-          
           # Проверяем что источник добавлен
           echo "Список источников NuGet:"
           dotnet nuget list source || true
           
-          # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
+          # Создаем nuget.config с package source mapping
           cat > nuget.config << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
@@ -173,6 +189,8 @@ jobs:
             </packageSourceMapping>
           </configuration>
           EOF
+          
+          set -e
 
       - name: Restore dependencies
         run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity normal
