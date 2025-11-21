@@ -12,8 +12,8 @@ namespace WorkTrack.Common.DependencyInjection.Tests;
 /// </summary>
 internal sealed class OrderedTestInstaller : IServiceInstaller
 {
-    private readonly string name;
-    private readonly List<string> callOrder;
+    private readonly string _name;
+    private readonly List<string> _callOrder;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OrderedTestInstaller"/> class.
@@ -22,13 +22,13 @@ internal sealed class OrderedTestInstaller : IServiceInstaller
     /// <param name="callOrder">Список для отслеживания порядка вызовов.</param>
     public OrderedTestInstaller(string name, List<string> callOrder)
     {
-        this.name = name;
-        this.callOrder = callOrder;
+        this._name = name;
+        this._callOrder = callOrder;
     }
 
     /// <inheritdoc />
     public void Install(IServiceCollection services, IConfiguration configuration)
     {
-        this.callOrder.Add(this.name);
+        this._callOrder.Add(this._name);
     }
 }

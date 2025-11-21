@@ -1,7 +1,3 @@
-// <copyright file="InstallerRegistry.cs" company="WorkTrack Team">
-// Copyright (c) WorkTrack Team. All rights reserved.
-// </copyright>
-
 using System.Reflection;
 using Ardalis.GuardClauses;
 using Microsoft.Extensions.Configuration;
