@@ -9,7 +9,7 @@
         <Authors>WorkTrack Team</Authors>
         <Description>Общие абстракции для модульной регистрации сервисов через IServiceInstaller</Description>
         <PackageTags>WorkTrack;DependencyInjection;DI;ServiceInstaller</PackageTags>
-        <RepositoryUrl>https://github.com/WorkTrack-Team/WorkTrack</RepositoryUrl>
+        <RepositoryUrl>https://github.com/WorkTrack-Team/WorkTrack.Common.DependencyInjection</RepositoryUrl>
         <NoDefaultExcludes>true</NoDefaultExcludes>
         <!-- Отключаем SA1309 для полей с подчеркиванием (как в WorkTrack.Identity) -->
         <NoWarn>$(NoWarn);SA1309;SA1101;</NoWarn>
