@@ -58,7 +58,7 @@ jobs:
           EOF
 
       - name: Restore dependencies
-        run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity detailed
+        run: dotnet restore WorkTrack.Common.DependencyInjection.sln
 
       - name: Build
         run: dotnet build WorkTrack.Common.DependencyInjection.sln --no-restore --configuration Release
