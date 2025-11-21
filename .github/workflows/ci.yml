@@ -42,7 +42,7 @@ jobs:
             NUGET_TOKEN="$GITHUB_TOKEN"
           fi
           
-          echo "Настраиваем GitHub Packages"
+          echo "Настраиваем GitHub Packages с токеном (длина: ${#NUGET_TOKEN})"
           dotnet nuget update source github \
             --username BelousovMike \
             --password "$NUGET_TOKEN" \
@@ -52,6 +52,10 @@ jobs:
             --username BelousovMike \
             --password "$NUGET_TOKEN" \
             --store-password-in-clear-text
+          
+          # Проверяем что источник добавлен
+          echo "Список источников NuGet:"
+          dotnet nuget list source || true
           
           # Создаем nuget.config с package source mapping
           cat > nuget.config << 'EOF'
@@ -67,9 +71,12 @@ jobs:
             </packageSourceMapping>
           </configuration>
           EOF
+          
+          echo "Содержимое nuget.config:"
+          cat nuget.config
 
       - name: Restore dependencies
-        run: dotnet restore WorkTrack.Common.DependencyInjection.sln
+        run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity detailed
 
       - name: Build
         run: dotnet build WorkTrack.Common.DependencyInjection.sln --no-restore --configuration Release
@@ -150,7 +157,7 @@ jobs:
             NUGET_TOKEN="$GITHUB_TOKEN"
           fi
           
-          echo "Настраиваем GitHub Packages"
+          echo "Настраиваем GitHub Packages с токеном (длина: ${#NUGET_TOKEN})"
           dotnet nuget update source github \
             --username BelousovMike \
             --password "$NUGET_TOKEN" \
@@ -160,6 +167,10 @@ jobs:
             --username BelousovMike \
             --password "$NUGET_TOKEN" \
             --store-password-in-clear-text
+          
+          # Проверяем что источник добавлен
+          echo "Список источников NuGet:"
+          dotnet nuget list source || true
           
           # Создаем nuget.config с package source mapping
           cat > nuget.config << 'EOF'
@@ -175,9 +186,12 @@ jobs:
             </packageSourceMapping>
           </configuration>
           EOF
+          
+          echo "Содержимое nuget.config:"
+          cat nuget.config
 
       - name: Restore dependencies
-        run: dotnet restore WorkTrack.Common.DependencyInjection.sln
+        run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity detailed
 
       - name: Run analyzers
         run: dotnet build WorkTrack.Common.DependencyInjection.sln --no-restore --configuration Release -warnaserror
