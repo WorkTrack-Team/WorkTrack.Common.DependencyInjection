@@ -132,6 +132,9 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Setup NuGet sources
+        env:
+          NUGET_PAT: ${{ secrets.NUGET_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Добавляем nuget.org как источник для публичных пакетов
           dotnet nuget add source https://api.nuget.org/v3/index.json \
@@ -139,12 +142,12 @@ jobs:
           
           # Настраиваем GitHub Packages
           # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          if [ "${{ secrets.NUGET_PAT }}" != "" ]; then
+          if [ -n "$NUGET_PAT" ]; then
             echo "Используем NUGET_PAT для доступа к пакетам"
-            NUGET_TOKEN="${{ secrets.NUGET_PAT }}"
+            NUGET_TOKEN="$NUGET_PAT"
           else
             echo "NUGET_PAT не установлен, используем GITHUB_TOKEN"
-            NUGET_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+            NUGET_TOKEN="$GITHUB_TOKEN"
           fi
           
           echo "Настраиваем GitHub Packages"
@@ -159,7 +162,7 @@ jobs:
             --store-password-in-clear-text
           
           # Создаем nuget.config с package source mapping
-          cat > nuget.config << 'NUGETEOF'
+          cat > nuget.config << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
             <packageSourceMapping>
@@ -171,7 +174,7 @@ jobs:
               </packageSource>
             </packageSourceMapping>
           </configuration>
-          NUGETEOF
+          EOF
 
       - name: Restore dependencies
         run: dotnet restore WorkTrack.Common.DependencyInjection.sln
