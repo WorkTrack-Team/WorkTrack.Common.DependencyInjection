@@ -28,23 +28,17 @@ jobs:
           dotnet nuget add source https://api.nuget.org/v3/index.json \
             --name nuget.org || true
           
-          # Настраиваем GitHub Packages
-          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          if [ -n "${{ secrets.NUGET_PAT }}" ]; then
-            NUGET_TOKEN="${{ secrets.NUGET_PAT }}"
-          else
-            NUGET_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          fi
-          
+          # Настраиваем GitHub Packages с GITHUB_TOKEN
+          # GITHUB_TOKEN всегда доступен и имеет права на чтение пакетов организации
           echo "Настраиваем GitHub Packages"
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "$NUGET_TOKEN" \
+            --password "${{ secrets.GITHUB_TOKEN }}" \
             --store-password-in-clear-text 2>/dev/null || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "$NUGET_TOKEN" \
+            --password "${{ secrets.GITHUB_TOKEN }}" \
             --store-password-in-clear-text
           
           # Создаем nuget.config с package source mapping
@@ -128,23 +122,17 @@ jobs:
           dotnet nuget add source https://api.nuget.org/v3/index.json \
             --name nuget.org || true
           
-          # Настраиваем GitHub Packages
-          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          if [ -n "${{ secrets.NUGET_PAT }}" ]; then
-            NUGET_TOKEN="${{ secrets.NUGET_PAT }}"
-          else
-            NUGET_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          fi
-          
+          # Настраиваем GitHub Packages с GITHUB_TOKEN
+          # GITHUB_TOKEN всегда доступен и имеет права на чтение пакетов организации
           echo "Настраиваем GitHub Packages"
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "$NUGET_TOKEN" \
+            --password "${{ secrets.GITHUB_TOKEN }}" \
             --store-password-in-clear-text 2>/dev/null || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "$NUGET_TOKEN" \
+            --password "${{ secrets.GITHUB_TOKEN }}" \
             --store-password-in-clear-text
           
           # Создаем nuget.config с package source mapping
