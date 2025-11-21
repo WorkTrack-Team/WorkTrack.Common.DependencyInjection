@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
+      packages: read
+      id-token: write
 
     steps:
       - name: Checkout
@@ -28,18 +29,31 @@ jobs:
           dotnet nuget add source https://api.nuget.org/v3/index.json \
             --name nuget.org || true
           
-          # Настраиваем GitHub Packages с GITHUB_TOKEN
-          # GITHUB_TOKEN всегда доступен и имеет права на чтение пакетов организации
+          # Настраиваем GitHub Packages
+          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
+          # GITHUB_TOKEN с permissions: packages: read должен иметь доступ к пакетам организации
+          if [ "${{ secrets.NUGET_PAT }}" != "" ]; then
+            echo "Используем NUGET_PAT для доступа к пакетам"
+            NUGET_TOKEN="${{ secrets.NUGET_PAT }}"
+          else
+            echo "NUGET_PAT не установлен, используем GITHUB_TOKEN"
+            NUGET_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          fi
+          
           echo "Настраиваем GitHub Packages"
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "${{ secrets.GITHUB_TOKEN }}" \
+            --password "$NUGET_TOKEN" \
             --store-password-in-clear-text 2>/dev/null || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "${{ secrets.GITHUB_TOKEN }}" \
+            --password "$NUGET_TOKEN" \
             --store-password-in-clear-text
+          
+          # Проверяем что источник добавлен
+          echo "Список источников NuGet:"
+          dotnet nuget list source
           
           # Создаем nuget.config с package source mapping
           cat > nuget.config << 'NUGETEOF'
@@ -57,7 +71,7 @@ jobs:
           NUGETEOF
 
       - name: Restore dependencies
-        run: dotnet restore WorkTrack.Common.DependencyInjection.sln
+        run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity detailed
 
       - name: Build
         run: dotnet build WorkTrack.Common.DependencyInjection.sln --no-restore --configuration Release
@@ -107,6 +121,9 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -122,17 +139,25 @@ jobs:
           dotnet nuget add source https://api.nuget.org/v3/index.json \
             --name nuget.org || true
           
-          # Настраиваем GitHub Packages с GITHUB_TOKEN
-          # GITHUB_TOKEN всегда доступен и имеет права на чтение пакетов организации
+          # Настраиваем GitHub Packages
+          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
+          if [ "${{ secrets.NUGET_PAT }}" != "" ]; then
+            echo "Используем NUGET_PAT для доступа к пакетам"
+            NUGET_TOKEN="${{ secrets.NUGET_PAT }}"
+          else
+            echo "NUGET_PAT не установлен, используем GITHUB_TOKEN"
+            NUGET_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          fi
+          
           echo "Настраиваем GitHub Packages"
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "${{ secrets.GITHUB_TOKEN }}" \
+            --password "$NUGET_TOKEN" \
             --store-password-in-clear-text 2>/dev/null || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "${{ secrets.GITHUB_TOKEN }}" \
+            --password "$NUGET_TOKEN" \
             --store-password-in-clear-text
           
           # Создаем nuget.config с package source mapping
