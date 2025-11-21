@@ -25,38 +25,25 @@ jobs:
 
       - name: Setup NuGet sources
         run: |
-          # Добавляем nuget.org как источник для публичных пакетов
-          dotnet nuget add source https://api.nuget.org/v3/index.json \
-            --name nuget.org || true
-          
-          # Настраиваем GitHub Packages
-          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          # GITHUB_TOKEN с permissions: packages: read должен иметь доступ к пакетам организации
-          if [ "${{ secrets.NUGET_PAT }}" != "" ]; then
-            echo "Используем NUGET_PAT для доступа к пакетам"
-            NUGET_TOKEN="${{ secrets.NUGET_PAT }}"
-          else
-            echo "NUGET_PAT не установлен, используем GITHUB_TOKEN"
-            NUGET_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          fi
-          
-          echo "Настраиваем GitHub Packages"
+          # Настраиваем аутентификацию для GitHub Packages
+          # Используем NUGET_PAT для доступа к пакетам организации
+          # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "$NUGET_TOKEN" \
-            --store-password-in-clear-text 2>/dev/null || \
+            --password "${{ secrets.NUGET_PAT }}" \
+            --store-password-in-clear-text || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "$NUGET_TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text
           
-          # Проверяем что источник добавлен
-          echo "Список источников NuGet:"
-          dotnet nuget list source
+          # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
+          dotnet nuget add source https://api.nuget.org/v3/index.json \
+            --name nuget.org || true
           
-          # Создаем nuget.config с package source mapping
-          cat > nuget.config << 'NUGETEOF'
+          # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
+          cat > nuget.config << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
             <packageSourceMapping>
@@ -68,7 +55,7 @@ jobs:
               </packageSource>
             </packageSourceMapping>
           </configuration>
-          NUGETEOF
+          EOF
 
       - name: Restore dependencies
         run: dotnet restore WorkTrack.Common.DependencyInjection.sln --verbosity detailed
