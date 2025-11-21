@@ -7,7 +7,7 @@ namespace WorkTrack.Common.DependencyInjection;
 /// </summary>
 internal sealed class InstallerFactory
 {
-    private readonly IInstallerCreationStrategy strategy;
+    private readonly IInstallerCreationStrategy _strategy;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InstallerFactory"/> class.
@@ -16,7 +16,7 @@ internal sealed class InstallerFactory
     public InstallerFactory(IInstallerCreationStrategy strategy)
     {
         Guard.Against.Null(strategy);
-        this.strategy = strategy;
+        _strategy = strategy;
     }
 
     /// <summary>
@@ -30,6 +30,6 @@ internal sealed class InstallerFactory
         Action<Type, Exception>? onError = null)
     {
         Guard.Against.Null(types);
-        return types.Select(type => this.strategy.TryCreate(type, onError)).OfType<IServiceInstaller>();
+        return types.Select(type => _strategy.TryCreate(type, onError)).OfType<IServiceInstaller>();
     }
 }

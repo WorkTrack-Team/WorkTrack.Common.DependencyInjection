@@ -22,13 +22,13 @@ internal sealed class OrderedTestInstaller : IServiceInstaller
     /// <param name="callOrder">Список для отслеживания порядка вызовов.</param>
     public OrderedTestInstaller(string name, List<string> callOrder)
     {
-        this._name = name;
-        this._callOrder = callOrder;
+        _name = name;
+        _callOrder = callOrder;
     }
 
     /// <inheritdoc />
     public void Install(IServiceCollection services, IConfiguration configuration)
     {
-        this._callOrder.Add(this._name);
+        _callOrder.Add(_name);
     }
 }

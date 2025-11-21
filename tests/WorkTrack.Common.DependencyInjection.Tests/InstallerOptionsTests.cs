@@ -34,7 +34,7 @@ public sealed class InstallerOptionsTests
         Type? errorType = null;
         var options = new InstallerOptions
         {
-            OnError = (type, ex) =>
+            OnError = (type, _) =>
             {
                 errorType = type;
             },

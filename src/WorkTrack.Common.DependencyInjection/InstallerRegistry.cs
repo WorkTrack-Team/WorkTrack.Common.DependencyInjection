@@ -10,8 +10,8 @@ namespace WorkTrack.Common.DependencyInjection;
 /// </summary>
 internal sealed class InstallerRegistry
 {
-    private readonly IInstallerDiscovery discovery;
-    private readonly InstallerFactory factory;
+    private readonly IInstallerDiscovery _discovery;
+    private readonly InstallerFactory _factory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InstallerRegistry"/> class.
@@ -22,8 +22,8 @@ internal sealed class InstallerRegistry
     {
         Guard.Against.Null(discovery);
         Guard.Against.Null(factory);
-        this.discovery = discovery;
-        this.factory = factory;
+        _discovery = discovery;
+        _factory = factory;
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ internal sealed class InstallerRegistry
         Guard.Against.Null(configuration);
         Guard.Against.Null(assembly);
         var opts = options ?? new InstallerOptions();
-        var installers = this.ResolveInstallers(assembly, opts);
+        var installers = ResolveInstallers(assembly, opts);
         RegisterAll(installers, services, configuration);
     }
 
@@ -62,7 +62,7 @@ internal sealed class InstallerRegistry
         options.OnError ?? (options.LogErrors ? CreateDefaultErrorHandler() : null);
 
     private static Action<Type, Exception> CreateDefaultErrorHandler() =>
-        (type, ex) => { /* Можно добавить логирование через ILogger если нужно */ };
+        (_, _) => { /* Можно добавить логирование через ILogger если нужно */ };
 
     private static ConfigurableInstallerTypeFilter? CreateTypeFilter(InstallerOptions options)
     {
@@ -77,8 +77,8 @@ internal sealed class InstallerRegistry
     private IEnumerable<IServiceInstaller> ResolveInstallers(Assembly assembly, InstallerOptions options)
     {
         var filter = CreateTypeFilter(options);
-        var installerTypes = this.discovery.DiscoverInstallers(assembly, filter);
+        var installerTypes = _discovery.DiscoverInstallers(assembly, filter);
         var onError = CreateErrorHandler(options);
-        return this.factory.CreateInstallers(installerTypes, onError);
+        return _factory.CreateInstallers(installerTypes, onError);
     }
 }
