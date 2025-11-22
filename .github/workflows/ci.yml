@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
+      packages: read
+      id-token: write
 
     steps:
       - name: Checkout
@@ -49,10 +50,6 @@ jobs:
           # Проверяем, что источники добавлены
           echo "Доступные источники NuGet:"
           dotnet nuget list source
-          
-          # Пробуем найти пакет WorkTrack.Common.Analyzers
-          echo "Проверяем доступность пакета WorkTrack.Common.Analyzers:"
-          dotnet nuget search WorkTrack.Common.Analyzers --source github --take 5 || echo "Пакет не найден в источнике github"
           
           # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
           cat > nuget.config << 'EOF'
@@ -157,10 +154,6 @@ jobs:
           # Проверяем, что источники добавлены
           echo "Доступные источники NuGet:"
           dotnet nuget list source
-          
-          # Пробуем найти пакет WorkTrack.Common.Analyzers
-          echo "Проверяем доступность пакета WorkTrack.Common.Analyzers:"
-          dotnet nuget search WorkTrack.Common.Analyzers --source github --take 5 || echo "Пакет не найден в источнике github"
           
           # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
           cat > nuget.config << 'EOF'
