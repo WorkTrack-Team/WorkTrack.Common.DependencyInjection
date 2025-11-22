@@ -28,42 +28,30 @@ jobs:
           NUGET_PAT: ${{ secrets.NUGET_PAT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Добавляем nuget.org как источник для публичных пакетов
-          dotnet nuget add source https://api.nuget.org/v3/index.json \
-            --name nuget.org || true
-          
-          # Настраиваем GitHub Packages
+          # Настраиваем аутентификацию для GitHub Packages
           # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          if [ -n "${NUGET_PAT}" ] && [ "${#NUGET_PAT}" -gt 0 ]; then
-            echo "Используем NUGET_PAT для доступа к пакетам"
+          if [ -n "$NUGET_PAT" ]; then
             NUGET_TOKEN="$NUGET_PAT"
           else
-            echo "NUGET_PAT не установлен, используем GITHUB_TOKEN"
             NUGET_TOKEN="$GITHUB_TOKEN"
           fi
           
-          # Проверяем что токен не пустой
-          if [ -z "$NUGET_TOKEN" ] || [ "${#NUGET_TOKEN}" -eq 0 ]; then
-            echo "Ошибка: токен для GitHub Packages не установлен"
-            exit 1
-          fi
-          
-          echo "Настраиваем GitHub Packages (длина токена: ${#NUGET_TOKEN})"
+          # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
           dotnet nuget update source github \
             --username BelousovMike \
             --password "$NUGET_TOKEN" \
-            --store-password-in-clear-text 2>/dev/null || \
+            --store-password-in-clear-text || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
             --password "$NUGET_TOKEN" \
-            --store-password-in-clear-text || echo "Не удалось добавить источник GitHub Packages"
+            --store-password-in-clear-text
           
-          # Проверяем что источник добавлен
-          echo "Список источников NuGet:"
-          dotnet nuget list source || true
+          # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
+          dotnet nuget add source https://api.nuget.org/v3/index.json \
+            --name nuget.org || true
           
-          # Создаем nuget.config с package source mapping
+          # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
           cat > nuget.config << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
@@ -146,42 +134,30 @@ jobs:
           NUGET_PAT: ${{ secrets.NUGET_PAT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Добавляем nuget.org как источник для публичных пакетов
-          dotnet nuget add source https://api.nuget.org/v3/index.json \
-            --name nuget.org || true
-          
-          # Настраиваем GitHub Packages
+          # Настраиваем аутентификацию для GitHub Packages
           # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          if [ -n "${NUGET_PAT}" ] && [ "${#NUGET_PAT}" -gt 0 ]; then
-            echo "Используем NUGET_PAT для доступа к пакетам"
+          if [ -n "$NUGET_PAT" ]; then
             NUGET_TOKEN="$NUGET_PAT"
           else
-            echo "NUGET_PAT не установлен, используем GITHUB_TOKEN"
             NUGET_TOKEN="$GITHUB_TOKEN"
           fi
           
-          # Проверяем что токен не пустой
-          if [ -z "$NUGET_TOKEN" ] || [ "${#NUGET_TOKEN}" -eq 0 ]; then
-            echo "Ошибка: токен для GitHub Packages не установлен"
-            exit 1
-          fi
-          
-          echo "Настраиваем GitHub Packages (длина токена: ${#NUGET_TOKEN})"
+          # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
           dotnet nuget update source github \
             --username BelousovMike \
             --password "$NUGET_TOKEN" \
-            --store-password-in-clear-text 2>/dev/null || \
+            --store-password-in-clear-text || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
             --password "$NUGET_TOKEN" \
-            --store-password-in-clear-text || echo "Не удалось добавить источник GitHub Packages"
+            --store-password-in-clear-text
           
-          # Проверяем что источник добавлен
-          echo "Список источников NuGet:"
-          dotnet nuget list source || true
+          # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
+          dotnet nuget add source https://api.nuget.org/v3/index.json \
+            --name nuget.org || true
           
-          # Создаем nuget.config с package source mapping
+          # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
           cat > nuget.config << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
