@@ -24,27 +24,18 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Setup NuGet sources
-        env:
-          NUGET_PAT: ${{ secrets.NUGET_PAT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Настраиваем аутентификацию для GitHub Packages
-          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          if [ -n "$NUGET_PAT" ]; then
-            NUGET_TOKEN="$NUGET_PAT"
-          else
-            NUGET_TOKEN="$GITHUB_TOKEN"
-          fi
-          
+          # Используем NUGET_PAT для доступа к пакетам организации
           # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "$NUGET_TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "$NUGET_TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text
           
           # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
@@ -130,27 +121,18 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Setup NuGet sources
-        env:
-          NUGET_PAT: ${{ secrets.NUGET_PAT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Настраиваем аутентификацию для GitHub Packages
-          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          if [ -n "$NUGET_PAT" ]; then
-            NUGET_TOKEN="$NUGET_PAT"
-          else
-            NUGET_TOKEN="$GITHUB_TOKEN"
-          fi
-          
+          # Используем NUGET_PAT для доступа к пакетам организации
           # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "$NUGET_TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "$NUGET_TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text
           
           # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
