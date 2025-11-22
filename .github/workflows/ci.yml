@@ -51,20 +51,8 @@ jobs:
           echo "Доступные источники NuGet:"
           dotnet nuget list source
           
-          # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
-          cat > nuget.config << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <configuration>
-            <packageSourceMapping>
-              <packageSource key="github">
-                <package pattern="WorkTrack.Common.*" />
-              </packageSource>
-              <packageSource key="nuget.org">
-                <package pattern="*" />
-              </packageSource>
-            </packageSourceMapping>
-          </configuration>
-          EOF
+          # Используем существующий nuget.config из репозитория
+          # Учетные данные уже добавлены через dotnet nuget add source
       - name: Restore dependencies
         run: dotnet restore WorkTrack.Common.DependencyInjection.sln
 
@@ -155,20 +143,8 @@ jobs:
           echo "Доступные источники NuGet:"
           dotnet nuget list source
           
-          # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
-          cat > nuget.config << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <configuration>
-            <packageSourceMapping>
-              <packageSource key="github">
-                <package pattern="WorkTrack.Common.*" />
-              </packageSource>
-              <packageSource key="nuget.org">
-                <package pattern="*" />
-              </packageSource>
-            </packageSourceMapping>
-          </configuration>
-          EOF
+          # Используем существующий nuget.config из репозитория
+          # Учетные данные уже добавлены через dotnet nuget add source
       - name: Restore dependencies
         run: dotnet restore WorkTrack.Common.DependencyInjection.sln
 
