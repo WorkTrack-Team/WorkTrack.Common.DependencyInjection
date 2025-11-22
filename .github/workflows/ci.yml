@@ -46,6 +46,10 @@ jobs:
             --password "$TOKEN" \
             --store-password-in-clear-text
           
+          # Проверяем, что источники добавлены
+          echo "Доступные источники NuGet:"
+          dotnet nuget list source
+          
           # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
           cat > nuget.config << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
@@ -145,6 +149,10 @@ jobs:
             --username BelousovMike \
             --password "$TOKEN" \
             --store-password-in-clear-text
+          
+          # Проверяем, что источники добавлены
+          echo "Доступные источники NuGet:"
+          dotnet nuget list source
           
           # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
           cat > nuget.config << 'EOF'
