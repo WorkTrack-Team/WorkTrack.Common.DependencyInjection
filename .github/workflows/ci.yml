@@ -31,20 +31,20 @@ jobs:
           # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
           TOKEN="${NUGET_PAT:-$GITHUB_TOKEN}"
           
-          # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
-          dotnet nuget update source github \
-            --username BelousovMike \
-            --password "$TOKEN" \
-            --store-password-in-clear-text || \
+          # Удаляем существующие источники, если они есть (игнорируем ошибки)
+          dotnet nuget remove source github 2>/dev/null || true
+          dotnet nuget remove source nuget.org 2>/dev/null || true
+          
+          # Добавляем nuget.org как источник для публичных пакетов
+          dotnet nuget add source https://api.nuget.org/v3/index.json \
+            --name nuget.org || true
+          
+          # Добавляем GitHub Packages
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
             --password "$TOKEN" \
             --store-password-in-clear-text
-          
-          # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
-          dotnet nuget add source https://api.nuget.org/v3/index.json \
-            --name nuget.org || true
           
           # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
           cat > nuget.config << 'EOF'
@@ -110,6 +110,9 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -128,20 +131,20 @@ jobs:
           # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
           TOKEN="${NUGET_PAT:-$GITHUB_TOKEN}"
           
-          # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
-          dotnet nuget update source github \
-            --username BelousovMike \
-            --password "$TOKEN" \
-            --store-password-in-clear-text || \
+          # Удаляем существующие источники, если они есть (игнорируем ошибки)
+          dotnet nuget remove source github 2>/dev/null || true
+          dotnet nuget remove source nuget.org 2>/dev/null || true
+          
+          # Добавляем nuget.org как источник для публичных пакетов
+          dotnet nuget add source https://api.nuget.org/v3/index.json \
+            --name nuget.org || true
+          
+          # Добавляем GitHub Packages
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
             --password "$TOKEN" \
             --store-password-in-clear-text
-          
-          # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
-          dotnet nuget add source https://api.nuget.org/v3/index.json \
-            --name nuget.org || true
           
           # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
           cat > nuget.config << 'EOF'
