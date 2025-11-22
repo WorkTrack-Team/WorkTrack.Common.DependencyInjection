@@ -50,6 +50,10 @@ jobs:
           echo "Доступные источники NuGet:"
           dotnet nuget list source
           
+          # Пробуем найти пакет WorkTrack.Common.Analyzers
+          echo "Проверяем доступность пакета WorkTrack.Common.Analyzers:"
+          dotnet nuget search WorkTrack.Common.Analyzers --source github --take 5 || echo "Пакет не найден в источнике github"
+          
           # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
           cat > nuget.config << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
@@ -153,6 +157,10 @@ jobs:
           # Проверяем, что источники добавлены
           echo "Доступные источники NuGet:"
           dotnet nuget list source
+          
+          # Пробуем найти пакет WorkTrack.Common.Analyzers
+          echo "Проверяем доступность пакета WorkTrack.Common.Analyzers:"
+          dotnet nuget search WorkTrack.Common.Analyzers --source github --take 5 || echo "Пакет не найден в источнике github"
           
           # Создаем nuget.config с package source mapping для оптимизации поиска пакетов
           cat > nuget.config << 'EOF'
