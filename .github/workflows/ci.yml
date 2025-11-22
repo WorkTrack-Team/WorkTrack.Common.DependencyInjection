@@ -24,13 +24,9 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Setup NuGet sources
-        env:
-          NUGET_PAT: ${{ secrets.NUGET_PAT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Настраиваем аутентификацию для GitHub Packages
-          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          TOKEN="${NUGET_PAT:-$GITHUB_TOKEN}"
+          # Используем NUGET_PAT для доступа к пакетам организации
           
           # Удаляем существующие источники, если они есть (игнорируем ошибки)
           dotnet nuget remove source github 2>/dev/null || true
@@ -40,11 +36,15 @@ jobs:
           dotnet nuget add source https://api.nuget.org/v3/index.json \
             --name nuget.org || true
           
-          # Добавляем GitHub Packages
+          # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
+          dotnet nuget update source github \
+            --username BelousovMike \
+            --password "${{ secrets.NUGET_PAT }}" \
+            --store-password-in-clear-text || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "$TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text
           
           # Проверяем, что источники добавлены
@@ -128,13 +128,9 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Setup NuGet sources
-        env:
-          NUGET_PAT: ${{ secrets.NUGET_PAT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Настраиваем аутентификацию для GitHub Packages
-          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          TOKEN="${NUGET_PAT:-$GITHUB_TOKEN}"
+          # Используем NUGET_PAT для доступа к пакетам организации
           
           # Удаляем существующие источники, если они есть (игнорируем ошибки)
           dotnet nuget remove source github 2>/dev/null || true
@@ -144,11 +140,15 @@ jobs:
           dotnet nuget add source https://api.nuget.org/v3/index.json \
             --name nuget.org || true
           
-          # Добавляем GitHub Packages
+          # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
+          dotnet nuget update source github \
+            --username BelousovMike \
+            --password "${{ secrets.NUGET_PAT }}" \
+            --store-password-in-clear-text || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "$TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text
           
           # Проверяем, что источники добавлены
