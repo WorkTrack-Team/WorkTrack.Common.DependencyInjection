@@ -55,7 +55,6 @@ jobs:
             </packageSourceMapping>
           </configuration>
           EOF
-
       - name: Restore dependencies
         run: dotnet restore WorkTrack.Common.DependencyInjection.sln
 
@@ -82,7 +81,6 @@ jobs:
               print(f"Покрытие строк: {line_rate:.2f}%")
               print(f"Покрытие ветвей: {branch_rate:.2f}%")
           EOF
-
       - name: Upload coverage
         uses: codecov/codecov-action@v4
         with:
@@ -149,7 +147,6 @@ jobs:
             </packageSourceMapping>
           </configuration>
           EOF
-
       - name: Restore dependencies
         run: dotnet restore WorkTrack.Common.DependencyInjection.sln
 
