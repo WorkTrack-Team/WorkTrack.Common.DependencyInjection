@@ -11,8 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read
-      id-token: write
+      packages: write
 
     steps:
       - name: Checkout
@@ -24,23 +23,18 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Setup NuGet sources
-        env:
-          NUGET_PAT: ${{ secrets.NUGET_PAT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Настраиваем аутентификацию для GitHub Packages
-          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          TOKEN="${NUGET_PAT:-$GITHUB_TOKEN}"
-          
+          # Используем NUGET_PAT для доступа к пакетам организации
           # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "$TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "$TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text
           
           # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
@@ -74,7 +68,7 @@ jobs:
       - name: Generate coverage report
         if: always()
         run: |
-          python3 << 'PYEOF'
+          python3 << 'EOF'
           import xml.etree.ElementTree as ET
           import glob
           pattern = "TestResults/*/coverage.cobertura.xml"
@@ -87,7 +81,7 @@ jobs:
               branch_rate = float(root.attrib.get('branch-rate', 0)) * 100
               print(f"Покрытие строк: {line_rate:.2f}%")
               print(f"Покрытие ветвей: {branch_rate:.2f}%")
-          PYEOF
+          EOF
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
@@ -113,9 +107,6 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -126,23 +117,18 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Setup NuGet sources
-        env:
-          NUGET_PAT: ${{ secrets.NUGET_PAT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Настраиваем аутентификацию для GitHub Packages
-          # Используем NUGET_PAT если установлен, иначе GITHUB_TOKEN
-          TOKEN="${NUGET_PAT:-$GITHUB_TOKEN}"
-          
+          # Используем NUGET_PAT для доступа к пакетам организации
           # Сначала пытаемся обновить существующий источник, если его нет - добавляем новый
           dotnet nuget update source github \
             --username BelousovMike \
-            --password "$TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text || \
           dotnet nuget add source https://nuget.pkg.github.com/WorkTrack-Team/index.json \
             --name github \
             --username BelousovMike \
-            --password "$TOKEN" \
+            --password "${{ secrets.NUGET_PAT }}" \
             --store-password-in-clear-text
           
           # Добавляем nuget.org как источник для публичных пакетов (если его еще нет)
